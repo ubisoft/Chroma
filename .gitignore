@@ -1,0 +1,6 @@
+**/Debug/*.*
+**/.vs/*.*
+**/Chroma/*.*
+/source/.vs/*.*
+/source/x64/*.*
+Chroma/
