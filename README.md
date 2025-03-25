@@ -1,6 +1,6 @@
-# Chroma
+# UbiChroma
 
-**Chroma** helps in simulating different types of color blindness occurring in society.
+**UbiChroma** helps in simulating different types of color blindness occurring in society.
 
 Main purpose of this is to simulate 3 major [Color Blindness](https://en.wikipedia.org/wiki/Color_blindness) types _Protanopia_, _Deuteranopia_ and _Tritanopia_ for our different games and aid accessibility team in performing various complex testing.
 
