@@ -18,7 +18,7 @@ Following are key features:
 
 
 
-- For more details look into userguide [here](source/Userguide.pdf).
+- For more details look into userguide [here](source/resource/Userguide.pdf).
 
 ## Known Issue During CMake Process
 If you encounter the following error while running CMake without Visual Studio 2022:
