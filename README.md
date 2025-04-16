@@ -1,23 +1,19 @@
 # Chroma
 
-**Chroma** helps in simulating different types of color blindness occurring in society.
+**Chroma** helps in simulating different types of color blindness occurring in humans.
 
-Main purpose of this is to simulate 3 major [Color Blindness](https://en.wikipedia.org/wiki/Color_blindness) types _Protanopia_, _Deuteranopia_ and _Tritanopia_ for our different games and aid accessibility team in performing various complex testing.
+The main purpose of this is to simulate 3 major [Color Blindness](https://en.wikipedia.org/wiki/Color_blindness) types: _Protanopia_, _Deuteranopia_ and _Tritanopia_ for our different games and to aid the accessibility team in performing various complex testing.
 
 Following are key features:
 
-- Color Simulation on single monitor. This solution works on top of game and can be maximized as per requirement.
-- Work on all games. No dependency on any specific game or engine.
-- High performance. Able to simulation live gameplay upto 60 FPS.
-- Accurate results. 
-- Simulation of all type of color blind forms.
-- Only available solution which capture screen live gameplay screen and simulate.
-- Easy screenshot to log error.
+- Color simulation on a single monitor. This solution works on top of the game and can be maximized as per requirements.
+- Works on all games. No dependency on any specific game or engine.
+- High performance. Able to simulate live gameplay up to 60 FPS.
+- Accurate results.
+- Simulation of all types of color blindness.
+- Only available solution which captures live gameplay screen and simulates colorblindness.
+- Easy screenshots to log errors.
 - Easy and configurable UI.
-
-
-
-
 - For more details look into userguide [here](source/Userguide.pdf).
 
 ## Known Issue During CMake Process
