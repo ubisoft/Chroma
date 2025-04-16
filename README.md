@@ -1,6 +1,7 @@
 # Chroma
 
-**Chroma** helps in simulating different types of color blindness occurring in society.
+**Chroma** (developed by Ubisoft) helps in simulating different types of color blindness occurring in society.
+![03 Hero Asset - Secondary 1](https://github.com/user-attachments/assets/24da16ce-ee0d-42d2-a6c4-d3329086e095)
 
 Main purpose of this is to simulate 3 major [Color Blindness](https://en.wikipedia.org/wiki/Color_blindness) types _Protanopia_, _Deuteranopia_ and _Tritanopia_ for our different games and aid accessibility team in performing various complex testing.
 
