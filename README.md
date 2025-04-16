@@ -20,8 +20,9 @@ Following are key features:
 
 
 - For more details look into userguide [here](source/Userguide.pdf).
+<br/>
 
-  Download the official Chroma logos [here](assets/logos).
+**Download the official Chroma logos [here](assets/logos).**
 
 ## Known Issue During CMake Process
 If you encounter the following error while running CMake without Visual Studio 2022:
