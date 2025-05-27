@@ -16,8 +16,11 @@ Following are key features:
 - Easy screenshot to log error.
 - Easy and configurable UI.
 
-
-
+Here is an example comparing the default image with its Deuteranopia-filtered version:
+Original Image:
+![Ubisoft Chroma - Default View](https://github.com/user-attachments/assets/eb654cd7-7cbb-44f9-8816-6c863f321a82)
+Filtered Image (Deuteranopia):
+![Ubisoft Chroma - Deuteranopia View](https://github.com/user-attachments/assets/7a1af4ac-5a1f-45ca-a4ff-0c551861bac1)
 
 - For more details look into userguide [here](source/Userguide.pdf).
 <br/>
