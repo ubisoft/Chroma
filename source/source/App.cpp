@@ -51,11 +51,31 @@ void App::StartCapture(HWND const& hwnd, HWND const& clienthwnd, int const& filt
     {
         return;
     }
-    m_capture = std::make_unique<SimpleCapture>(m_device, item, clienthwnd, filter);
-    m_surface = m_capture->CreateSurface(m_compositor);
+    try
+    {
+        m_capture = std::make_unique<SimpleCapture>(m_device, item, clienthwnd, filter);
+        m_surface = m_capture->CreateSurface(m_compositor);
 
-    m_brush.Surface(m_surface);
-    m_capture->StartCapture();
+        m_brush.Surface(m_surface);
+        m_capture->StartCapture();
+    }
+    catch (winrt::hresult_error const& ex)
+    {
+        std::wstringstream wss;
+        wss << L"Failed to initialize screen capture.\r\n";
+        wss << L"Error Code: 0x" << std::hex << ex.code().value << L"\r\n";
+        wss << L"Message: " << ex.message().c_str();
+        MessageBoxW(clienthwnd, wss.str().c_str(), L"Capture Error", MB_OK | MB_ICONERROR);
+        
+        if (m_capture)
+        {
+            m_capture->Close(); // Ensure any partial resources are released
+            m_capture = nullptr;
+        }
+        m_surface = nullptr;
+        // Ensure brush is not holding onto a stale surface
+        if(m_brush) { m_brush.Surface(nullptr); }
+    }
     return;
 }
 

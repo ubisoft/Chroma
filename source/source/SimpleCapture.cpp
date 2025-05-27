@@ -55,7 +55,7 @@ SimpleCapture::SimpleCapture(
 	HRESULT hr  = m_3dDevice->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&DxgiDevice));
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to query IDXGIDevice.");
 	}
 
 	IDXGIAdapter* DxgiAdapter = nullptr;
@@ -64,7 +64,7 @@ SimpleCapture::SimpleCapture(
 	DxgiDevice = nullptr;
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to get parent IDXGIAdapter.");
 	}
 
 	hr = DxgiAdapter->GetParent(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&m_Factory));
@@ -72,7 +72,7 @@ SimpleCapture::SimpleCapture(
 	DxgiAdapter = nullptr;
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to get parent IDXGIFactory2.");
 	}
 	
 	// Get window size
@@ -95,32 +95,34 @@ SimpleCapture::SimpleCapture(
 
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to create swap chain for composition.");
 	}
 
 	// Disable the ALT-ENTER shortcut for entering full-screen mode
 	hr = m_Factory->MakeWindowAssociation(m_clientHwnd, DXGI_MWA_NO_ALT_ENTER);
 	if (FAILED(hr))
 	{
-		assert(false);
+		// This is not always a critical failure, but for consistency with previous asserts:
+		throw winrt::hresult_error(hr, L"Failed to make window association.");
 	}	
 	// Create shared texture
 	hr = CreateSharedSurf();
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to create shared surface.");
 	}
 	// Make new render target view
 	hr = MakeRTV();
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to make render target view.");
 	}
 	// Set view port
 	hr = SetViewPort(Width, Height);
 	if (FAILED(hr))
 	{
-		assert(false);
+		// SetViewPort currently always returns S_OK, but for robustness:
+		throw winrt::hresult_error(hr, L"Failed to set view port.");
 	}
 	// Create the sample state
 	D3D11_SAMPLER_DESC SampDesc;
@@ -135,7 +137,7 @@ SimpleCapture::SimpleCapture(
 	hr = m_3dDevice->CreateSamplerState(&SampDesc, &m_SamplerLinear);
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to create sampler state.");
 	}
 	
 	// Create the blend state
@@ -153,14 +155,14 @@ SimpleCapture::SimpleCapture(
 	hr = m_3dDevice->CreateBlendState(&BlendStateDesc, &m_BlendState);
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to create blend state.");
 	}
 
 	// Initialize shaders
 	hr = InitShaders();
 	if (FAILED(hr))
 	{
-		assert(false);
+		throw winrt::hresult_error(hr, L"Failed to initialize shaders.");
 	}
 	// END OF ADDED CHANGES
 	auto size = m_item.Size();
@@ -197,7 +199,7 @@ HRESULT SimpleCapture::InitShaders()
 	hr = m_3dDevice->CreateVertexShader(g_VS1, Size, nullptr, &m_VertexShader);
 	if (FAILED(hr))
 	{
-		assert(false);
+		//assert(false); // Removed assert
 		return hr;
 	}
 
@@ -211,7 +213,7 @@ HRESULT SimpleCapture::InitShaders()
 	hr = m_3dDevice->CreateInputLayout(Layout, NumElements, g_VS1, Size, &m_InputLayout);
 	if (FAILED(hr))
 	{
-		assert(false);
+		//assert(false); // Removed assert
 		return hr;
 	}
 
@@ -223,7 +225,7 @@ HRESULT SimpleCapture::InitShaders()
 		hr = m_3dDevice->CreatePixelShader(g_defaultMain, Size, nullptr, &m_PixelShader);
 		if (FAILED(hr))
 		{
-			assert(false);
+			//assert(false); // Removed assert
 			return hr;
 		}
 		break;
@@ -232,7 +234,7 @@ HRESULT SimpleCapture::InitShaders()
 		hr = m_3dDevice->CreatePixelShader(g_protanMain, Size, nullptr, &m_PixelShader);
 		if (FAILED(hr))
 		{
-			assert(false);
+			//assert(false); // Removed assert
 			return hr;
 		}
 		break;
@@ -241,7 +243,7 @@ HRESULT SimpleCapture::InitShaders()
 		hr = m_3dDevice->CreatePixelShader(g_deutanMain, Size, nullptr, &m_PixelShader);
 		if (FAILED(hr))
 		{
-			assert(false);
+			//assert(false); // Removed assert
 			return hr;
 		}
 		break;
@@ -250,7 +252,7 @@ HRESULT SimpleCapture::InitShaders()
 		hr = m_3dDevice->CreatePixelShader(g_tritanMain, Size, nullptr, &m_PixelShader);
 		if (FAILED(hr))
 		{
-			assert(false);
+			//assert(false); // Removed assert
 			return hr;
 		}
 		break;
@@ -259,7 +261,7 @@ HRESULT SimpleCapture::InitShaders()
 		hr = m_3dDevice->CreatePixelShader(g_greyscaleMain, Size, nullptr, &m_PixelShader);
 		if (FAILED(hr))
 		{
-			assert(false);
+			//assert(false); // Removed assert
 			return hr;
 		}
 		break;
@@ -268,7 +270,7 @@ HRESULT SimpleCapture::InitShaders()
 		hr = m_3dDevice->CreatePixelShader(g_defaultMain, Size, nullptr, &m_PixelShader);
 		if (FAILED(hr))
 		{
-			assert(false);
+			//assert(false); // Removed assert
 			return hr;
 		}
 	}
@@ -298,7 +300,7 @@ HRESULT SimpleCapture::MakeRTV()
 	HRESULT hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&BackBuffer));
 	if (FAILED(hr))
 	{
-		assert(false);
+		//assert(false); // Removed assert
 		return hr;
 	}
 	// Create a render target view
@@ -306,7 +308,7 @@ HRESULT SimpleCapture::MakeRTV()
 	BackBuffer->Release();
 	if (FAILED(hr))
 	{
-		assert(false);
+		//assert(false); // Removed assert
 		return hr;
 	}
 	// Set new render target
@@ -339,7 +341,7 @@ HRESULT SimpleCapture::CreateSharedSurf()
 	HRESULT hr = m_3dDevice->CreateTexture2D(&DeskTexD, nullptr, &m_SharedSurf);
 	if (FAILED(hr))
 	{
-		assert(false);
+		//assert(false); // Removed assert
 		return hr;
 	}   
 	return S_OK;
@@ -472,7 +474,11 @@ void SimpleCapture::OnFrameArrived(
 	HRESULT hr = m_3dDevice->CreateShaderResourceView(m_SharedSurf, &ShaderDesc, &ShaderResource);
 	if (FAILED(hr))
 	{
-		assert(false);
+		// assert(false); // Removed assert from OnFrameArrived
+		// This error is in OnFrameArrived. For now, just return to skip the frame.
+		// A more robust solution might involve trying to recover or stopping capture.
+		if (ShaderResource) { ShaderResource->Release(); ShaderResource = nullptr; }
+		return;
 	}
 
 	// Set resources
@@ -504,9 +510,11 @@ void SimpleCapture::OnFrameArrived(
 	hr = m_3dDevice->CreateBuffer(&BufferDesc, &InitData, &VertexBuffer);
 	if (FAILED(hr))
 	{
-		assert(false);
-		ShaderResource->Release();
-		ShaderResource = nullptr;
+		// assert(false); // Removed assert from OnFrameArrived
+		// This error is in OnFrameArrived. For now, just return to skip the frame.
+		if (ShaderResource) { ShaderResource->Release(); ShaderResource = nullptr; }
+		if (VertexBuffer) { VertexBuffer->Release(); VertexBuffer = nullptr; }
+		return;
 	}
 	m_d3dContext->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
 

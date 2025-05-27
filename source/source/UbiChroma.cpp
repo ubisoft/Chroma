@@ -39,6 +39,8 @@ HICON handIcon;
 HWND helpButton;
 HWND closeButton;
 
+HFONT g_hButtonFont = NULL; // Global variable for button font
+
 void StartCaptureWithWindow(const HWND& hwnd, const LPCSTR& windowName, const HWND& desthwnd, int& appliedFilter, const int& currentFilter)
 {    
     if (IsIconic(desthwnd))
@@ -295,10 +297,10 @@ LRESULT CALLBACK WndProcMain(
     {                 
         case WM_CREATE:
         {
-            HDC hdc = GetDC(hwnd);
-            HFONT hButtonFont = CreateFontA(20, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
+            // HDC hdc = GetDC(hwnd); // Not needed just for CreateFontA
+            g_hButtonFont = CreateFontA(20, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
                 CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, "Roboto");
-            ReleaseDC(hwnd, hdc);
+            // ReleaseDC(hwnd, hdc); // Not needed
 
             helpButton = CreateWindowEx(NULL,
                 L"BUTTON",
@@ -328,8 +330,8 @@ LRESULT CALLBACK WndProcMain(
                 GetModuleHandle(NULL),
                 NULL);            
 
-            SendMessage(helpButton, WM_SETFONT, (WPARAM)hButtonFont, (LPARAM)MAKELONG(TRUE, 0));
-            SendMessage(closeButton, WM_SETFONT, (WPARAM)hButtonFont, (LPARAM)MAKELONG(TRUE, 0));
+            SendMessage(helpButton, WM_SETFONT, (WPARAM)g_hButtonFont, (LPARAM)MAKELONG(TRUE, 0));
+            SendMessage(closeButton, WM_SETFONT, (WPARAM)g_hButtonFont, (LPARAM)MAKELONG(TRUE, 0));
         }
         break;      
         case WM_PAINT:
@@ -337,35 +339,51 @@ LRESULT CALLBACK WndProcMain(
             RECT rc;
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
+            HFONT hOldFont; // To store the original font
 
-            HFONT hFont = CreateFontA(20, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
+            // Font for "Quick Guide"
+            HFONT hFontBold = CreateFontA(20, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
                 CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, "Roboto");
-            LPCSTR szText = "Quick Guide";
-            SetRect(&rc, 75, 30, 40, 50);
-            SetTextColor(hdc, RGB(0, 116, 218));
-            SetBkMode(hdc, TRANSPARENT);
-            DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
+            
+            if (hFontBold)
+            {
+                hOldFont = (HFONT)SelectObject(hdc, hFontBold);
+                LPCSTR szText = "Quick Guide";
+                SetRect(&rc, 75, 30, 40, 50); // Note: SetRect defines the rectangle, x3,y3,x4,y4 are not width/height but right/bottom coords
+                SetTextColor(hdc, RGB(0, 116, 218));
+                SetBkMode(hdc, TRANSPARENT);
+                DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
+                SelectObject(hdc, hOldFont); // Restore old font
+                DeleteObject(hFontBold);
+            }
 
-            hFont = CreateFontA(20, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
+            // Font for subsequent text lines
+            HFONT hFontRegular = CreateFontA(20, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
                 CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, "Roboto");
 
-            szText = " > Right click on this client area.";
-            SetRect(&rc, 75, 70, 40, 50);
-            SetTextColor(hdc, RGB(0, 0, 0));
-            DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
+            if (hFontRegular)
+            {
+                hOldFont = (HFONT)SelectObject(hdc, hFontRegular);
+                LPCSTR szText = " > Right click on this client area.";
+                SetRect(&rc, 75, 70, 40, 50); // Adjust rectangle as needed
+                SetTextColor(hdc, RGB(0, 0, 0));
+                // SetBkMode is still TRANSPARENT from above
+                DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
 
-            szText = " > Select application you want capture.";
-            SetRect(&rc, 75, 100, 40, 50);
-            SetTextColor(hdc, RGB(0, 0, 0));
-            DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
+                szText = " > Select application you want capture.";
+                SetRect(&rc, 75, 100, 40, 50); // Adjust rectangle as needed
+                DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
 
-            szText = " > If application is not captured please make sure that the application is not\n    minimized or in hidden state.";
-            SetRect(&rc, 75, 130, 40, 50);
-            SetTextColor(hdc, RGB(0, 0, 0));
-            DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
+                szText = " > If application is not captured please make sure that the application is not\n    minimized or in hidden state.";
+                SetRect(&rc, 75, 130, 40, 50); // Adjust rectangle as needed
+                DrawTextA(hdc, szText, (INT)strlen(szText), &rc, DT_NOCLIP);
+                
+                SelectObject(hdc, hOldFont); // Restore old font
+                DeleteObject(hFontRegular);
+            }
 
             EndPaint(hwnd, &ps);
-            ReleaseDC(hwnd, hdc);
+            // ReleaseDC(hwnd, hdc); // Not needed with BeginPaint/EndPaint
         }
         break;
         case IDC_POPUPMENU:
@@ -392,6 +410,11 @@ LRESULT CALLBACK WndProcMain(
             }
             break;
         case WM_DESTROY:
+            if (g_hButtonFont)
+            {
+                DeleteObject(g_hButtonFont);
+                g_hButtonFont = NULL;
+            }
             Shell_NotifyIcon(NIM_DELETE, &g_niData);
             if (g_hwEventHook)
             {
@@ -497,7 +520,10 @@ LRESULT CALLBACK WndProcMain(
                         HINSTANCE hresult = ShellExecuteA(GetDesktopWindow(), "open", "resource\\Userguide.pdf", NULL, NULL, SW_SHOWNORMAL);
                         if ((INT_PTR)hresult <= 32)
                         {
-                            assert(hresult);
+                            // ShellExecuteA returns a value > 32 on success.
+                            // Values <= 32 indicate an error.
+                            std::string errorMessage = "Could not open Userguide.pdf. Error code: " + std::to_string((INT_PTR)hresult);
+                            MessageBoxA(hwnd, errorMessage.c_str(), "Help Error", MB_OK | MB_ICONERROR);
                         }                        
                     }
                     break;
@@ -628,7 +654,17 @@ LRESULT CALLBACK WndProcMain(
 
                         if (msgID == IDYES)
                         {
-                            Sleep(SLEEP_CONST);
+                            CHAR default_documents_path[MAX_PATH];
+                            if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, default_documents_path)))
+                            {
+                                g_screenshotPath = default_documents_path;
+                                g_screenshotPath += "\\UbiChroma Screenshots";
+                                CreateDirectoryA(g_screenshotPath.c_str(), NULL); // Ensure the directory exists
+                                IniParser::WriteToIni("SCREENSHOT", g_screenshotPath); // Persist the change
+                            }
+                            // If SHGetFolderPathA fails, g_screenshotPath remains unchanged, and ScreenshotHelper might use its own default or fail.
+
+                            Sleep(SLEEP_CONST); // Existing sleep call
                             if (!ScreenshotHelper(hwnd, g_windows.at(g_index).Hwnd(), ID_HOTKEY_TOOL_SCREENSHOT))
                             {
                                 MSGBOXPARAMSA msgbox = { 0 };
@@ -662,7 +698,17 @@ LRESULT CALLBACK WndProcMain(
 
                         if (msgID == IDYES)
                         {
-                            Sleep(SLEEP_CONST);
+                            CHAR default_documents_path[MAX_PATH];
+                            if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, default_documents_path)))
+                            {
+                                g_screenshotPath = default_documents_path;
+                                g_screenshotPath += "\\UbiChroma Screenshots";
+                                CreateDirectoryA(g_screenshotPath.c_str(), NULL); // Ensure the directory exists
+                                IniParser::WriteToIni("SCREENSHOT", g_screenshotPath); // Persist the change
+                            }
+                            // If SHGetFolderPathA fails, g_screenshotPath remains unchanged, and ScreenshotHelper might use its own default or fail.
+
+                            Sleep(SLEEP_CONST); // Existing sleep call
                             if (!ScreenshotHelper(hwnd, g_windows.at(g_index).Hwnd(), ID_HOTKEY_TOOLGAME_SCREENSHOT))
                             {
                                 MSGBOXPARAMSA msgbox = { 0 };
