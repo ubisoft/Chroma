@@ -17,11 +17,15 @@ Following are key features:
 - Easy and configurable UI.
 
 Here is an example comparing the default image with its Deuteranopia-filtered version:
+<br/>
 Original Image:
+<br/>
 ![Ubisoft Chroma - Default View](https://github.com/user-attachments/assets/eb654cd7-7cbb-44f9-8816-6c863f321a82)
+<br/>
 Filtered Image (Deuteranopia):
+<br/>
 ![Ubisoft Chroma - Deuteranopia View](https://github.com/user-attachments/assets/7a1af4ac-5a1f-45ca-a4ff-0c551861bac1)
-
+<br/>
 - For more details look into userguide [here](source/Userguide.pdf).
 <br/>
 
