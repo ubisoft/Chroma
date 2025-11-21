@@ -183,7 +183,7 @@ SimpleCapture::SimpleCapture(
 	char* charwindowText = new char[(int)(Length + 1)];
 	GetWindowTextA(m_clientHwnd, charwindowText, (Length + 1));
 	m_windowText = charwindowText + std::string(" : ");
-	delete charwindowText;
+	delete[] charwindowText;
 }
 
 //
