@@ -15,6 +15,20 @@ Following are key features:
 - Easy screenshots to log errors.
 - Easy and configurable UI.
 - For more details look into userguide [here](source/Userguide.pdf).
+  
+Here is an example comparing the default image with its Deuteranopia-filtered version:
+<br/>
+<br/>
+<b>Original Image</b>:
+<br/>
+<br/>
+![Ubisoft Chroma - Default View](https://github.com/user-attachments/assets/eb654cd7-7cbb-44f9-8816-6c863f321a82)
+<br/>
+<br/>
+<b>Filtered Image (Deuteranopia)</b>:
+<br/>
+<br/>
+![Ubisoft Chroma - Deuteranopia View](https://github.com/user-attachments/assets/7a1af4ac-5a1f-45ca-a4ff-0c551861bac1)
 <br/>
 
 **Download the official Chroma logos [here](assets/logos).**
@@ -33,3 +47,4 @@ nuget install Microsoft.Windows.CppWinRT
 ```
 
 Alternatively, ensure that your development environment is using an updated version of `CPPWinRT`. **The best option to avoid this issue is to use Visual Studio 2022.**
+
